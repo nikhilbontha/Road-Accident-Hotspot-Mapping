@@ -1,0 +1,6 @@
+record_id,occurred_at,latitude,longitude,location_name,severity,fatalities,injuries,vehicle_number,driver_name,driver_phone,weather,road_type
+ACC-TEST-001,2026-03-10 18:30:00,17.4399,78.4983,Station Rd Junction,Fatal,1,2,TS09EA1234,Ramesh Chandra,9876543210,Clear,National Highway
+ACC-TEST-001,2026-03-10 18:30:00,17.4399,78.4983,Station Rd Junction,Fatal,1,2,TS09EA1234,Ramesh Chandra,9876543210,Clear,National Highway
+ACC-TEST-002,2026-03-11 20:15:00,95.1234,78.4890,Market Cross,Grievous injury,0,3,AP28Z9999,Sunil Verma,9848022338,Rain,City Road
+ACC-TEST-003,2026-03-12 14:00:00,17.4125,78.5320,ORR Exit 12,Grievious,0,1,DL1CAB1234,John Doe,9988776655,Clear,Expressway
+ACC-TEST-004,2026-03-13 19:45:00,,,Near Metro Pillar 114,Minor injury,0,1,TS07AB4321,Praveen Kumar,9123456780,Fog,City Road

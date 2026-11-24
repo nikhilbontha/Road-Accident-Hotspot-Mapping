@@ -1,0 +1,588 @@
+Business Requirements Document (BRD)
+Road Accident Hotspot Mapping
+Institution: Anurag University  |  Document ID: BRD-RAH-001  |  Version: 1.1 (Draft for Review)  |  Status: Draft
+1. Document Control
+1.1 Document Information
+Field
+Details
+Project Name
+Road Accident Hotspot Mapping
+Document Type
+Business Requirements Document (BRD)
+Domain
+Road Safety / Geospatial Analytics (GIS) / Data Science / Artificial Intelligence
+Prepared By
+Team 12 – Road Accident Hotspot Mapping
+Sri Kedharnath K (23EG110E04) – Deployment
+Nikhil Bontha (23EG107E11) – Tester
+Siddartha Reddy Koppurapu (23EG106C32) – Backend + Database
+Sreeram Nikhila (23EG107A58) – Frontend + UI/UX
+Reviewed By
+[Faculty Guide / Mentor]
+Approved By
+[Head of Department / Project Coordinator]
+Date
+23-Nov-2026
+1.2 Version History
+Version
+Date
+Author
+Description of Change
+1.0
+[Date]
+[Author]
+Initial draft BRD
+1.1
+[Date]
+[Author]
+Structured to industry-standard format; added measurable success metrics, requirement priorities, business rules, risks, traceability matrix and glossary
+1.3 Approval Sign-Off
+Role
+Name
+Signature
+Date
+Faculty Guide
+Project Coordinator
+Team Lead
+2. Executive Summary
+Road Accident Hotspot Mapping is a data-driven, web-based geospatial platform that helps traffic police, road safety analysts and transport authorities identify, analyze and prioritize accident-prone locations (hotspots or black spots). Using geospatial analysis, machine learning and AI techniques, the system imports and cleans road accident records, locates them on an interactive map, detects statistically significant accident clusters, scores and classifies each hotspot by risk, analyzes contributing factors, recommends road safety interventions, and tracks each hotspot through to resolution on a centralized dashboard.
+The platform is designed as a human-in-the-loop decision-support tool: all hotspot rankings and recommendations are advisory and must be validated by qualified road safety professionals (for example through field surveys) before any engineering, enforcement or policy action is taken.
+Core value chain: Collect → Validate → Analyze → Map → Prioritize → Recommend → Track
+3. Business Context and Problem Statement
+3.1 Background
+Road accidents cause a significant number of deaths, injuries and economic losses every year. Accident data is recorded by multiple agencies (police stations, highway authorities, hospitals and municipal bodies) in different formats such as FIR registers, spreadsheets and reports. Much of it lacks accurate coordinates, which makes it difficult to see where accidents concentrate and why. As a result, limited road safety budgets are often allocated on the basis of experience or complaints rather than evidence.
+3.2 Problem Statement
+To locate dangerous road stretches and plan corrective measures, road safety teams typically have to:
+Manually collect and consolidate accident records from multiple sources and formats
+Clean data and locate accidents on maps by hand, often from textual addresses or landmarks
+Identify locations with repeated or severe accidents using spreadsheets
+Investigate contributing factors such as time of day, weather, road type and vehicle type
+Prioritize locations for intervention within limited budgets
+Track whether implemented interventions actually reduced accidents
+This manual process is time-consuming, error-prone and heavily dependent on individual experience. It delays the identification of dangerous locations, increases the risk of repeated accidents and makes it hard to measure the impact of safety measures.
+3.3 Proposed Solution
+Road Accident Hotspot Mapping automates the repetitive parts of accident data analysis. It ingests and validates accident records, geocodes and maps them, detects and ranks hotspots, classifies risk levels, identifies contributing factors, recommends safety interventions, supports assignment and tracking, and retains history so that the effect of past interventions can be measured and reused in future planning.
+4. Business Objectives and Success Metrics
+Objectives are expressed with measurable targets. Targets are proposed baselines to be confirmed with the faculty guide during review.
+ID
+Business Objective
+Success Metric (Proposed Target)
+BO01
+Consolidate and standardize accident data
+Uploaded accident datasets are validated, cleaned and geocoded automatically, with a data quality report for every import
+BO02
+Identify accident hotspots
+A ranked list of hotspots with risk score and supporting evidence is produced for every analyzed dataset
+BO03
+Reduce manual analysis effort
+Reduction in average time to identify hotspots versus the manual spreadsheet process (target to be agreed, e.g. ≥ 30%)
+BO04
+Provide road safety recommendations
+Every hotspot with sufficient data includes factor analysis and recommendations rated useful by reviewing road safety experts in a majority of test cases
+BO05
+Classify hotspots by risk level
+Risk level is assigned automatically and can be overridden by an authorized user
+BO06
+Maintain data history and action status
+100% of datasets, hotspots and actions retain status, comments and change history
+BO07
+Provide a centralized map dashboard
+Dashboard shows accident counts, hotspot map, trends and risk distribution from live data
+BO08
+Support evidence-based planning
+Measurable reduction in time taken to prioritize locations and the ability to compare accidents before and after an intervention during pilot evaluation
+5. Scope
+5.1 In Scope
+User registration, authentication and role-based access control
+Accident record entry (manual) and bulk data import (CSV / Excel)
+Data validation, cleaning, duplicate detection and geocoding
+Hotspot detection using spatial analysis and machine learning
+Risk scoring and classification of hotspots
+Interactive map visualization (heatmap, clusters, markers, filters)
+Contributing factor analysis and safety recommendations
+Hotspot assignment, commenting, action tracking and before / after comparison
+AI insights assistant for natural-language questions
+In-app notifications
+Dashboard, analytics, report export and history
+Masking of personal and sensitive data
+5.2 Out of Scope
+Autonomous implementation of road engineering changes, signage or signal timing
+Automatic enforcement actions (e.g. issuing challans or penalties) or dispatch of emergency services
+Replacement of national or state accident databases and enterprise traffic management systems
+Real-time streaming of live traffic or GPS feeds (manual upload is the supported input for this release)
+Profiling or identification of individual drivers, victims or vehicles
+5.3 Future Enhancements (Not in Current Release)
+Integration with national and state accident reporting systems (e.g. iRAD / eDAR) and police FIR systems
+Integration with real-time traffic, weather and navigation data sources
+Predictive models to forecast accident-prone locations and time windows
+Mobile application for field survey and public reporting of unsafe locations
+Email and SMS notification channels
+Learning from expert feedback to improve recommendations
+6. Stakeholders and User Roles
+6.1 Stakeholders
+Stakeholder
+Interest in the System
+Faculty Guide / Evaluation Committee
+Project quality, technical depth and adherence to requirements
+Project Team
+Design, development, testing and deployment
+Traffic Police and Road Safety Teams
+Faster, more reliable identification of dangerous locations and causes
+Transport / Highway / Municipal Authorities
+Evidence for prioritizing road safety investments and measuring their impact
+Public and Road Users
+Awareness of high-risk locations and safer roads
+6.2 User Roles and Responsibilities
+Role
+Responsibility
+Admin
+Manages users, roles, permissions, analysis settings and system configuration
+Traffic Police Officer
+Imports and verifies accident data, reviews hotspots and coordinates enforcement-related follow-up
+Road Safety Analyst
+Runs and fine-tunes analysis, validates hotspots, reviews factors and recommendations
+Road Authority Official
+Reviews hotspots, assigns and tracks interventions, and uses analytics for planning (read-oriented access)
+Public Viewer
+Views aggregated, anonymized hotspot map and statistics only
+6.3 Role–Permission Summary (Proposed)
+Capability
+Admin
+Police Officer
+Road Safety Analyst
+Authority Official
+Public Viewer
+Manage users and roles
+Yes
+No
+No
+No
+No
+Import / create accident records
+Yes
+Yes
+Yes
+No
+No
+Run hotspot analysis
+Yes
+Yes
+Yes
+No
+No
+View hotspot map
+Yes
+Yes
+Yes
+Yes
+Aggregated only
+Assign hotspots for action
+Yes
+Yes
+No
+Yes
+No
+Update status / add comments
+Yes
+Yes
+Yes
+Yes
+No
+Override risk level
+Yes
+No
+Yes
+No
+No
+Use AI insights assistant
+Yes
+Yes
+Yes
+Yes
+No
+View dashboard and analytics
+Yes
+Yes
+Yes
+Yes
+Aggregated only
+Export reports
+Yes
+Yes
+Yes
+Yes
+No
+7. Business Workflow
+Step
+Stage
+Description
+Primary Actor
+1
+Data Ingestion
+Accident records are entered manually or imported from CSV / Excel files
+User
+2
+Validation and Cleaning
+Records are validated, duplicates removed, locations geocoded and personal data masked
+System
+3
+Hotspot Analysis
+Spatial analysis and clustering identify accident hotspots on road segments and junctions
+AI / Analytics Engine
+4
+Risk Scoring and Recommendation
+Hotspots are scored and classified, contributing factors analyzed and safety recommendations generated
+AI / Analytics Engine
+5
+Assignment
+The hotspot is assigned to a responsible official or engineer
+Admin / Authority Official
+6
+Validation and Intervention
+The expert reviews analysis, validates on site, applies corrective measures and updates the status
+Analyst / Authority Official
+7
+Tracking and Closure
+Status changes and comments are recorded and post-intervention accident trends are monitored
+System
+7.1 Hotspot Status Lifecycle
+Identified → Under Review → Assigned → Action In Progress → Implemented → Closed (a hotspot may be Reopened from Implemented or Closed if accidents continue).
+8. Functional Requirements
+Priority key (MoSCoW): M = Must have, S = Should have, C = Could have.
+8.1 Requirements Summary
+ID
+Requirement
+Priority
+Related Objective
+FR-01
+User Authentication and Access Control
+M
+BO-06
+FR-02
+Accident Data Import and Management
+M
+BO-01, BO-06
+FR-03
+Data Validation, Cleaning and Geocoding
+M
+BO-01, BO-03
+FR-04
+Hotspot Detection and Spatial Analysis
+M
+BO-02, BO-03
+FR-05
+Risk Scoring and Classification
+M
+BO-05
+FR-06
+Interactive Map Visualization
+M
+BO-02, BO-07
+FR-07
+Contributing Factor Analysis and Safety Recommendations
+M
+BO-04
+FR-08
+Hotspot Tracking and Action Management
+M
+BO-06, BO-08
+FR-09
+AI Insights Assistant
+S
+BO-03, BO-08
+FR-10
+Notification System
+S
+BO-08
+FR-11
+Dashboard and Analytics
+M
+BO-07, BO-08
+FR-12
+Data Privacy and Sensitive Data Masking
+M
+Security / privacy constraint
+FR-13
+Audit Trail
+S
+BO-06
+8.2 Detailed Requirements and Acceptance Criteria
+FR-01: User Authentication and Access Control
+The system shall allow users to register and log in, enforce role-based access control, and allow administrators to manage users, roles and permissions.
+Acceptance criteria: (a) A registered user can log in with valid credentials and is denied with invalid ones. (b) Each role can access only the features permitted in the role–permission summary, and the Public Viewer sees only aggregated data. (c) An administrator can create, edit and deactivate users and change roles.
+FR-02: Accident Data Import and Management
+The system shall allow authorized users to add accident records manually or import them in bulk from CSV / Excel files. Each record shall receive a unique accident ID and capture date, time, latitude and longitude (or location description), road name and type, severity (fatal, grievous injury, minor injury, non-injury), number of fatalities and injuries, vehicle types involved, weather and light conditions, and probable cause where available.
+Acceptance criteria: (a) A unique ID is generated for every accident record. (b) All mandatory fields are validated before saving. (c) Supported file types, a maximum file size and a standard import template are defined, and unsupported files are rejected with a clear message. (d) An import summary shows the number of records accepted and rejected.
+FR-03: Data Validation, Cleaning and Geocoding
+The system shall validate imported records, detect duplicates, missing or out-of-range values and invalid coordinates, standardize formats (such as dates and severity categories), and geocode records that contain only an address or landmark.
+Acceptance criteria: (a) Seeded duplicates and invalid coordinates in a test file are detected and reported. (b) Records with only an address are geocoded and flagged with a geocoding confidence. (c) A data quality report (accepted, corrected, rejected) is stored against each import. (d) Rejected records can be corrected and re-submitted.
+FR-04: Hotspot Detection and Spatial Analysis
+The system shall analyze validated accident data using spatial analysis and machine learning techniques (for example kernel density estimation and DBSCAN clustering) to identify accident hotspots along road segments and at junctions. Authorized users shall be able to configure analysis parameters such as search radius, minimum number of accidents, time period and severity weighting.
+Acceptance criteria: (a) Seeded accident clusters in a test dataset are detected as hotspots. (b) Each hotspot shows the number of accidents, fatalities and injuries and the analysis period. (c) The parameters used are stored with the results so the analysis is reproducible. (d) If the data is insufficient, the system states that no reliable hotspot can be determined rather than guessing.
+FR-05: Risk Scoring and Classification
+The system shall compute a severity-weighted risk score for each hotspot, classify it by risk level according to the table below, and allow authorized users to override the AI-suggested risk level.
+Acceptance criteria: (a) Every hotspot has a risk score and a risk level. (b) Scoring weights and thresholds are configurable by an administrator and displayed to users. (c) Overrides are recorded in the audit trail with user, time and reason.
+Risk Level
+Definition
+Critical
+Very high concentration of fatal or grievous-injury accidents; requires immediate attention
+High
+High accident frequency or severity; priority for intervention
+Medium
+Moderate accident frequency; requires monitoring and planned improvement
+Low
+Few or low-severity accidents; routine monitoring
+FR-06: Interactive Map Visualization
+The system shall display accidents and hotspots on an interactive map with heatmap, cluster and marker layers, color-coded by risk level, with zoom, pan and pop-up details. Users shall be able to filter the map by date range, time of day, severity, road type, weather, vehicle type and area.
+Acceptance criteria: (a) Map markers and hotspots match the underlying data. (b) Filters update the map correctly. (c) Selecting a hotspot shows a summary of its accidents, risk level and status. (d) The map loads within the agreed performance target.
+FR-07: Contributing Factor Analysis and Safety Recommendations
+The system shall analyze contributing factors for each hotspot (time of day, day of week, weather, light conditions, road type, vehicle type and recorded causes) and generate recommended safety interventions such as signage, speed calming, street lighting, junction redesign or enforcement. Experts must review recommendations before taking action.
+Acceptance criteria: (a) A factor summary is generated for every hotspot with sufficient data. (b) Each recommendation is linked to the factor(s) it addresses and shows supporting evidence. (c) The interface clearly labels recommendations as AI-generated and requiring expert review.
+FR-08: Hotspot Tracking and Action Management
+The system shall allow users to view hotspots, assign them to responsible officials or engineers, update status, add comments, record interventions and maintain resolution history. Users shall be able to search and filter hotspots by status, risk level, road or area, assignee and date, and compare accident counts before and after a recorded intervention.
+Acceptance criteria: (a) Status follows the defined lifecycle. (b) Comments are timestamped and attributed. (c) Search and filters return correct results. (d) A before / after comparison is available for any hotspot with a recorded intervention date.
+FR-09: AI Insights Assistant
+The system shall provide a conversational interface where users can ask questions such as which are the top hotspots in an area, at what time most fatal accidents occur at a location, what factors contribute to accidents at a hotspot, which interventions are recommended, and whether accidents have reduced since an intervention.
+Acceptance criteria: (a) Answers are grounded in the stored accident data and analysis results. (b) The assistant cites the hotspot or data used. (c) Out-of-scope questions receive a polite refusal or redirection.
+FR-10: Notification System
+The system shall notify relevant users when a Critical hotspot is detected, a hotspot is assigned, a risk level changes, or an intervention is marked as implemented. For this release, notifications are delivered in-app; email and SMS are future enhancements.
+Acceptance criteria: (a) Notifications are generated for each listed event. (b) Only relevant users receive them. (c) Users can view and mark notifications as read.
+FR-11: Dashboard and Analytics
+The dashboard shall display total accidents, fatalities and injuries; number of hotspots by risk level; accidents by severity, road type and area; time-of-day and day-of-week distributions; and accident trends over time. Users shall be able to export reports.
+Acceptance criteria: (a) Figures match the underlying accident data. (b) Data can be filtered by date range and area. (c) Reports can be exported in PDF or CSV format. (d) The dashboard loads within the agreed performance target.
+FR-12: Data Privacy and Sensitive Data Masking
+The system shall detect and mask or remove personal identifiers (such as victim or driver names, contact numbers, vehicle registration numbers and licence numbers) in imported data before they are stored or sent to any external LLM or third-party service.
+Acceptance criteria: (a) Seeded personal identifiers are masked in stored data and in LLM requests. (b) Masking is applied before analysis begins. (c) The public view displays only aggregated, anonymized data.
+FR-13: Audit Trail
+The system shall record data imports, record edits, analysis runs and hotspot activity, including who made each change and when.
+Acceptance criteria: (a) Import, assignment, status change, risk override, analysis run and comment events are logged. (b) Audit records cannot be edited by regular users.
+9. Non-Functional Requirements
+Targets are proposed and may be refined during design and testing.
+Category
+Requirement
+Proposed Measure
+Performance
+Analyze accident data within a reasonable response time
+Typical analysis of a dataset up to the defined size limit (e.g. 50,000 records) completed within 120 seconds; map and dashboard pages load within 3 seconds
+Security
+Protect accident data and personal information
+Role-based access, encrypted transport (HTTPS), hashed passwords, personal identifiers masked (FR-12)
+Scalability
+Support multiple users and datasets simultaneously
+Handles concurrent analysis and map requests from multiple users without failure
+Reliability
+Handle analysis, map-service and AI failures gracefully
+On a geocoding, map or LLM error, the user sees a clear message, data is saved, and the operation can be retried
+Availability
+Provide access to authorized users
+Target availability suitable for a deployed academic project (e.g. 95%+ during evaluation period)
+Maintainability
+Support modular development and updates
+Separation of UI, API, analytics / AI and data layers; documented code and APIs
+Explainability
+Explain analytical findings
+Every hotspot shows its accident evidence, score components, parameters used and a confidence indicator
+Geospatial Accuracy
+Ensure correct location mapping
+Coordinates validated against valid geographic bounds; geocoded locations carry a confidence flag
+Auditability
+Maintain data and activity history
+Complete, time-stamped change history (FR-13)
+Usability
+Easy to use by non-technical road safety staff
+Core tasks (import data, run analysis, view hotspot map) achievable without training documentation
+Compatibility
+Accessible on common browsers and devices
+Latest versions of Chrome, Edge, Firefox; responsive layout for tablets
+10. Business Rules
+ID
+Rule
+BR-01
+Hotspot rankings, risk levels and recommendations are advisory and must be validated by a qualified road safety professional before any action.
+BR-02
+No road change, enforcement action or emergency dispatch is executed automatically by the system.
+BR-03
+Personal identifiers (names, contact numbers, vehicle registration and licence numbers) must be masked or removed before storage or LLM processing.
+BR-04
+Every accident record must have a unique ID, a valid date and valid coordinates (or be flagged for correction); every hotspot must have a unique ID, a risk level and a status at all times.
+BR-05
+Only authorized roles may import data, assign hotspots, override risk levels or manage users.
+BR-06
+A Critical hotspot must trigger a notification to relevant users.
+BR-07
+All data imports, status changes and risk level changes must be recorded in the audit trail.
+BR-08
+Public views must show only aggregated, anonymized information.
+11. Data Requirements
+Accident data: ID, date, time, latitude, longitude, location description, road name and type, severity, fatalities, injuries, vehicle types, weather, light condition, probable cause (personal identifiers masked)
+Hotspot data: hotspot ID, location / road segment, geometry, accident count, risk score, risk level, status, assignee, timestamps
+Analysis output: parameters used, clusters, contributing factors, recommendations, supporting evidence, confidence indicators
+Geospatial reference data: base map tiles, road network, administrative boundaries
+User data: profile, role, authentication credentials (hashed)
+Activity data: import logs, data quality reports, comments, notifications, audit records, assistant conversations
+Retention: retention period and deletion rules for accident data and analysis results to be defined with the faculty guide
+12. Assumptions, Constraints and Dependencies
+12.1 Assumptions
+Accident data provided is reasonably complete and contains coordinates or addresses that can be geocoded
+Users have a stable internet connection
+Road safety experts are available to review analysis results and validate hotspots
+12.2 Constraints
+Map, geocoding and cloud-based LLM services require internet connectivity
+Hotspot accuracy depends on the quality, completeness and reporting coverage of accident data (under-reporting may bias results)
+Analysis output must always be validated by qualified professionals
+Personal data must be masked before external processing
+Physical road interventions require approval by the competent road authority
+The project must be completed within the academic calendar and available team resources
+12.3 Dependencies
+Availability, licensing and rate limits of map and geocoding providers (e.g. OpenStreetMap-based services)
+Availability, pricing and rate limits of the chosen LLM provider
+Cloud hosting platform for deployment
+Public, sample or synthetic accident datasets for development and testing
+13. Risks and Mitigation
+ID
+Risk
+Likelihood
+Impact
+Mitigation
+R01
+Hotspots misidentified due to biased, under-reported or incorrect data
+Medium
+High
+Show evidence, parameters and confidence; mandatory expert review; state “insufficient data” when unsure
+R02
+Exposure of personal or sensitive data
+Low
+High
+Mask identifiers before storage and processing; restrict access by role; aggregated public view
+R03
+Map, geocoding or LLM service downtime or rate limiting
+Medium
+Medium
+Graceful error handling, retry option, caching and queued processing
+R04
+Poor data quality (missing or wrong coordinates) reduces accuracy
+High
+Medium
+Input validation, data quality report, import template, lower confidence for sparse data
+R05
+Scope creep beyond academic timeline
+Medium
+Medium
+Strict MoSCoW prioritization and change control
+R06
+Cloud, map or LLM usage costs exceed budget
+Medium
+Low
+Limit dataset size, cache results, use free / open-source map services and cost-efficient models
+R07
+Lack of real accident data for testing
+Medium
+Medium
+Use public datasets (e.g. open government data portals) and synthetically generated data
+14. Deliverables and Milestones
+14.1 Business Deliverables
+User authentication and management module
+Accident data import, validation and geocoding module
+Hotspot detection and spatial analysis module
+Risk scoring and classification module
+Interactive hotspot map and visualization
+Contributing factor analysis and recommendation engine
+Hotspot assignment, tracking and history module
+AI insights assistant
+Analytics and reporting dashboard
+Deployed working application
+Project documentation (BRD, design document, test report, user guide)
+14.2 Proposed Milestones
+Phase
+Activity
+Target Date
+1
+Requirements finalization and approval
+[Date]
+2
+System design and architecture (including data model and GIS design)
+[Date]
+3
+Core development (authentication, data import, validation and geocoding)
+[Date]
+4
+Analytics modules (hotspot detection, risk scoring, factor analysis, recommendations, assistant)
+[Date]
+5
+Map, dashboard, notifications and integration
+[Date]
+6
+Testing, defect fixing and review
+[Date]
+7
+Deployment and final demonstration
+[Date]
+15. Acceptance Criteria and Success Measures
+The project is considered successful when:
+All Must-have requirements (FR-01 to FR-08, FR-11, FR-12) are implemented and pass their acceptance criteria.
+Users can import accident data, view it on an interactive map and receive detected hotspots with risk levels, contributing factors and recommendations.
+Hotspots can be prioritized, assigned, tracked and retain a complete history.
+The dashboard displays accurate analytics.
+Personal data masking is demonstrated using test data.
+The application is deployed and demonstrated successfully to the evaluation committee.
+Business objectives BO-01 to BO-08 are evaluated against their success metrics, and results are documented.
+16. Requirements Traceability Matrix
+Business Objective
+Functional Requirements
+Workflow Step
+BO-01 Consolidate accident data
+FR-02, FR-03, FR-12
+1, 2
+BO-02 Identify hotspots
+FR-04, FR-06
+3
+BO-03 Reduce manual effort
+FR-03, FR-04, FR-09
+2, 3, 4
+BO-04 Safety recommendations
+FR-07
+4
+BO-05 Risk classification
+FR-05
+4
+BO-06 Data and action history
+FR-01, FR-02, FR-08, FR-13
+5, 6, 7
+BO-07 Central map dashboard
+FR-06, FR-11
+7
+BO-08 Evidence-based planning
+FR-08, FR-09, FR-10, FR-11
+5, 6, 7
+17. Glossary
+Term
+Meaning
+BRD
+Business Requirements Document
+Accident Hotspot / Black Spot
+A road location or short stretch with a statistically high concentration or severity of accidents
+GIS
+Geographic Information System – technology for capturing, analyzing and displaying location-based data
+Geocoding
+Converting an address or landmark into geographic coordinates (latitude and longitude)
+KDE
+Kernel Density Estimation – a method that estimates the concentration of events across space, used to create heatmaps
+DBSCAN
+Density-Based Spatial Clustering of Applications with Noise – a clustering algorithm that groups closely located points
+Heatmap
+A map layer that uses color intensity to show the concentration of accidents
+LLM
+Large Language Model
+RBAC
+Role-Based Access Control
+MoSCoW
+Prioritization method: Must, Should, Could, Won't
+FIR
+First Information Report – the police record of a reported incident
+iRAD / eDAR
+Government road accident data platforms in India (Integrated Road Accident Database / electronic Detailed Accident Report)
+Human-in-the-loop
+A design where a person reviews and approves AI output before action
+18. Conclusion
+Road Accident Hotspot Mapping transforms scattered accident records into an intelligent, evidence-based and auditable road safety workflow. By combining geospatial analytics, machine learning and AI-assisted insights with action tracking, the platform helps road safety teams locate dangerous stretches faster, understand why accidents occur and prioritize interventions more effectively, while keeping qualified professionals firmly in control of every decision.
+Core Business Value: Collect → Validate → Analyze → Map → Prioritize → Recommend → Track

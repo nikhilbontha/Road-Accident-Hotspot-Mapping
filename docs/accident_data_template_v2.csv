@@ -1,0 +1,4 @@
+accident_code,date,time,location,latitude,longitude,severity,fatalities,injuries,road_name,road_type,vehicle_types,weather,light_condition,probable_cause
+ACC-2026-0001,2026-05-14,19:30,NH-65 × Station Road Junction,17.4125,78.5721,Grievous injury,0,2,National Highway 65,junction,Two-wheeler;Car,Clear,Dark: Streetlights on,Overspeeding at intersection
+ACC-2026-0002,2026-06-20,22:15,"Outer Ring Road, Exit 12",17.4890,78.6120,Fatal,1,1,Outer Ring Road,national_highway,Truck;Two-wheeler,Rain,Dark: No streetlights,Poor visibility and wet road
+ACC-2026-0003,2026-08-11,15:45,Market Road Curve,17.3980,78.4720,Minor injury,0,1,Market Road,city_road,Two-wheeler,Clear,Daylight,Sharp bend negotiation
