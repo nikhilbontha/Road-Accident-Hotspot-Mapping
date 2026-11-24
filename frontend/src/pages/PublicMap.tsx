@@ -106,16 +106,16 @@ export const PublicMapPage: React.FC = () => {
 
         <div className="flex items-center gap-2.5">
           <button
-            onClick={() => navigate('/login')}
+            onClick={() => navigate('/signup')}
             className="px-3.5 py-1.5 rounded-btn border border-line bg-card text-ink text-[13px] font-medium hover:bg-paper"
           >
-            Sign in
+            Create account
           </button>
           <button
-            onClick={() => navigate('/signup')}
+            onClick={() => navigate('/login')}
             className="px-3.5 py-1.5 rounded-btn bg-lane text-ink text-[13px] font-semibold hover:brightness-105 shadow-sm"
           >
-            Create account
+            Sign in
           </button>
         </div>
       </header>
@@ -162,20 +162,23 @@ export const PublicMapPage: React.FC = () => {
           <circle cx="250" cy="170" r="70" fill="url(#pub-high)" />
           <circle cx="640" cy="400" r="60" fill="url(#pub-med)" />
 
-          {/* Area Markers with Letters */}
+          {/* Area Markers with Numbers (1 to 8) matching reference image */}
           {[
-            { cx: 560, cy: 330, label: 'A', color: '#C62F2A' },
-            { cx: 700, cy: 190, label: 'B', color: '#C62F2A' },
-            { cx: 350, cy: 430, label: 'C', color: '#E2762B' },
-            { cx: 250, cy: 170, label: 'D', color: '#E2762B' },
-            { cx: 640, cy: 400, label: 'E', color: '#E7B416' },
+            { cx: 560, cy: 330, label: '1', color: '#C62F2A' },
+            { cx: 700, cy: 190, label: '2', color: '#C62F2A' },
+            { cx: 350, cy: 430, label: '3', color: '#E2762B' },
+            { cx: 250, cy: 170, label: '4', color: '#E2762B' },
+            { cx: 640, cy: 400, label: '5', color: '#E7B416' },
+            { cx: 480, cy: 220, label: '6', color: '#E7B416' },
+            { cx: 800, cy: 360, label: '7', color: '#E7B416' },
+            { cx: 180, cy: 480, label: '8', color: '#3E8E62' },
           ].map((m, idx) => (
             <g
               key={m.label}
               className="cursor-pointer transition-transform hover:scale-110"
-              onClick={() => setSelectedIndex(idx)}
+              onClick={() => setSelectedIndex(idx % publicAreas.length)}
             >
-              {selectedIndex === idx && (
+              {(selectedIndex === idx || (idx >= publicAreas.length && selectedIndex === 0)) && (
                 <circle cx={m.cx} cy={m.cy} r="22" fill="none" stroke="#1F2328" strokeWidth="2.5" />
               )}
               <circle cx={m.cx} cy={m.cy} r="13" fill={m.color} stroke="#FFFFFF" strokeWidth="3" />
@@ -258,8 +261,8 @@ export const PublicMapPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Notice Banner (BR-08 Privacy Assurance) */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-asphalt text-white text-[12.5px] px-5 py-2.5 rounded-full shadow-lg z-10 flex items-center gap-2">
+        {/* Bottom Notice Banner (BR-08 Privacy Assurance - White pill card matching reference) */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-card text-ink border border-line text-[12.5px] px-5 py-2.5 rounded-full shadow-md z-10 flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-lane" />
           <span>Areas are shown within about 500 m. No personal details are shown.</span>
         </div>
