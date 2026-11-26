@@ -124,7 +124,25 @@ def get_map_heat(
     return hotspot_detector.compute_kde_heat_grid(records_data)
 
 
+@router.get("/map/layers")
+def get_map_layers(
+    db: Session = Depends(get_db),
+    current_user: Any = Depends(get_current_active_user),
+) -> Any:
+    """
+    Returns available geospatial layers and metadata (FR-06).
+    """
+    return {
+        "layers": [
+            {"id": "hotspots", "name": "Ranked Hotspots", "type": "point", "endpoint": "/api/v1/map/hotspots", "default": True},
+            {"id": "accidents", "name": "Crash Points", "type": "point", "endpoint": "/api/v1/map/accidents", "default": True},
+            {"id": "heat", "name": "KDE Crash Density", "type": "raster", "endpoint": "/api/v1/map/heat", "default": True},
+        ]
+    }
+
+
 @router.get("/public/map")
+@router.get("/map/public-grid")
 def get_public_map(
     db: Session = Depends(get_db),
 ) -> Any:

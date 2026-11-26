@@ -51,8 +51,12 @@ def list_notifications(
             "created_at": n.created_at.isoformat() if n.created_at else None,
             "time_ago": format_time_ago(n.created_at, now)
         }
+        created_dt = n.created_at
+        if created_dt and created_dt.tzinfo is None:
+            created_dt = created_dt.replace(tzinfo=timezone.utc)
+
         # Categorize today vs earlier
-        if n.created_at and (now - n.created_at).total_seconds() < 86400:
+        if created_dt and (now - created_dt).total_seconds() < 86400:
             today_items.append(item)
         else:
             earlier_items.append(item)

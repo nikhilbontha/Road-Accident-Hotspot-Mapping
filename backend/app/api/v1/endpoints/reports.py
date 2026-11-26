@@ -131,6 +131,7 @@ def create_report(
     }
 
 @router.get("/{report_id}/download")
+@router.get("/download/{report_id}")
 def download_report(
     report_id: str,
     db: Session = Depends(get_db)

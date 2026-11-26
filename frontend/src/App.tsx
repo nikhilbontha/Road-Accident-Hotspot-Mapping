@@ -24,6 +24,7 @@ export const App: React.FC = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/public" element={<PublicMapPage />} />
+        <Route path="/public-map" element={<Navigate to="/public" replace />} />
 
         {/* Authenticated Application Shell */}
         <Route element={<Layout />}>

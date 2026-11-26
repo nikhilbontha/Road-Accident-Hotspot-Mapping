@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+from datetime import datetime, timezone
 
 from app.core.config import settings
 from app.core.db import engine, Base
@@ -26,10 +28,26 @@ app = FastAPI(
     version=settings.VERSION,
     description="Geospatial decision-support platform for Road Accident Hotspot Mapping (Team 12, Anurag University, BRD-RAH-001).",
     openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
-    docs_url=f"{settings.API_V1_PREFIX}/docs",
-    redoc_url=f"{settings.API_V1_PREFIX}/redoc",
+    docs_url="/docs",
+    redoc_url="/redoc",
     lifespan=lifespan,
 )
+
+# Also expose /api/v1/docs redirecting to /docs
+@app.get(f"{settings.API_V1_PREFIX}/docs", include_in_schema=False)
+async def api_docs_redirect():
+    return RedirectResponse(url="/docs")
+
+# Root health check endpoint
+@app.get("/health", tags=["Health"])
+async def root_health_check():
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "project": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "environment": settings.ENVIRONMENT,
+    }
 
 # Set CORS middleware
 if settings.CORS_ORIGINS:

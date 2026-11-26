@@ -10,13 +10,15 @@ from app.api.v1.endpoints import (
     dashboard,
     notifications,
     reports,
-    assistant
+    assistant,
+    accidents
 )
 
 api_router = APIRouter()
 api_router.include_router(health.router)
 api_router.include_router(auth.router)
 api_router.include_router(users.router)
+api_router.include_router(accidents.router)
 api_router.include_router(imports.router)
 api_router.include_router(analysis.router)
 api_router.include_router(map.router)

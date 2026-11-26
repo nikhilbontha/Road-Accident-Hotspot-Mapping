@@ -7,14 +7,11 @@ A web-based geospatial decision-support platform that helps traffic police, road
 
 ---
 
-## 👥 Team & Module Ownership
+## 👤 Project Author & Ownership
 
-| Name | Roll Number | Module Ownership |
-|---|---|---|
-| **Sri Kedharnath K** | 23EG110E04 | **Deployment & DevOps** (Docker Compose, CI/CD, Prometheus, Grafana, Nginx) |
-| **Nikhil Bontha** | 23EG107E11 | **Testing & QA** (pytest backend test suite, Vitest frontend test suite, Postman collection) |
-| **Siddartha Reddy Koppurapu** | 23EG106C32 | **Backend & Database** (FastAPI, PostGIS, DBSCAN/KDE spatial analytics, RBAC) |
-| **Sreeram Nikhila** | 23EG107A58 | **Frontend & UI/UX** (React 18 + TS SPA, Tailwind CSS, Leaflet OSM, 13 Reference Screens) |
+| Name | Roll Number | Project Role | Module Coverage |
+|---|---|---|---|
+| **Nikhil Bontha** | 23EG107E11 | **Lead Full-Stack, AI/GIS & DevOps Engineer** | Complete Architecture, Frontend (React 18 + TS), Backend (FastAPI), Spatial Analytics (DBSCAN/KDE), Database (PostGIS/SQLite), Testing & DevOps |
 
 ---
 
@@ -61,45 +58,80 @@ All demo accounts share the password: `Password123!` (or `DemoPass123!`).
 
 ---
 
-## 🚀 Quick Start (Docker Compose)
+## 🚀 How to Run the Servers
 
-### 1. Configure Environment
+You can run the application either **locally with Python & Node.js** (recommended for quick development and live demonstration) or **fully containerized via Docker Compose**.
+
+---
+
+### Option A: Local Setup (Fastest & Zero-Config SQLite)
+
+#### 1. Setup & Environment
 ```bash
+# Clone the repository
+git clone https://github.com/nikhilbontha/Road-Accident-Hotspot-Mapping.git
+cd Road-Accident-Hotspot-Mapping
+
+# Copy environment file
 cp .env.example .env
 ```
 
-### 2. Launch Entire Monorepo
+#### 2. Start Backend Server (FastAPI)
+```bash
+# Open Terminal 1:
+cd backend
+
+# Create & activate virtual environment:
+python -m venv venv
+
+# Windows (PowerShell):
+venv\Scripts\Activate.ps1
+# Linux / macOS:
+source venv/bin/activate
+
+# Install Python requirements:
+pip install -r requirements.txt
+
+# (Optional: database comes pre-seeded with 4,812 crashes & 47 blackspots; to re-seed anytime run:)
+python ../scripts/seed_demo_data.py
+
+# Launch FastAPI application:
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+* **Backend API:** [http://127.0.0.1:8000](http://127.0.0.1:8000)
+* **Interactive Swagger Docs:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+* **Health Check Endpoint:** [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
+
+#### 3. Start Frontend Server (React + Vite)
+```bash
+# Open Terminal 2:
+cd frontend
+
+# Install Node dependencies:
+npm install
+
+# Start Vite dev server:
+npm run dev -- --host 127.0.0.1 --port 5173
+```
+* **Web Application:** [http://127.0.0.1:5173](http://127.0.0.1:5173)
+* **Public Awareness Map:** [http://127.0.0.1:5173/public](http://127.0.0.1:5173/public)
+
+---
+
+### Option B: Docker Compose (Full Production Multi-Container Stack)
+
+To run the complete production environment (FastAPI, React, PostgreSQL 16 + PostGIS, Redis, MinIO, Prometheus, Grafana):
+
 ```bash
 docker compose up --build
 ```
 
-### 3. Access Services
-- **Frontend App:** [http://localhost](http://localhost) (or `http://localhost:5173`)
-- **Backend API Docs (Swagger / OpenAPI):** [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Prometheus Metrics:** [http://localhost:9090](http://localhost:9090)
-- **Grafana Observability Dashboards:** [http://localhost:3001](http://localhost:3001) (`admin` / `admin`)
-- **MinIO Object Console:** [http://localhost:9001](http://localhost:9001) (`minioadmin` / `minioadmin`)
-
----
-
-## 💻 Local Development Setup (Without Docker)
-
-### Backend
-```bash
-cd backend
-python -m venv venv
-# Windows: venv\Scripts\activate | Linux/Mac: source venv/bin/activate
-pip install -r requirements.txt
-python scripts/seed_demo_data.py
-uvicorn app.main:app --reload --port 8000
-```
-
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
+**Service Endpoints:**
+* **Frontend App:** [http://localhost](http://localhost) (or `http://localhost:5173`)
+* **Backend API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
+* **Prometheus Metrics:** [http://localhost:9090](http://localhost:9090)
+* **Grafana Dashboards:** [http://localhost:3001](http://localhost:3001) (Credentials: `admin` / `admin`)
+* **MinIO Object Console:** [http://localhost:9001](http://localhost:9001) (Credentials: `minioadmin` / `minioadmin`)
 
 ---
 

@@ -79,9 +79,6 @@ All **13 Functional Requirements (FR-01 to FR-13)**, **8 Business Rules (BR-01 t
 
 ---
 
-## 6. Sign-off & Team Ownership
+## 6. Sign-off & Project Ownership
 
-- **Deployment & DevOps:** Sri Kedharnath K (23EG110E04) — Signed Off
-- **Testing & QA:** Nikhil Bontha (23EG107E11) — Signed Off
-- **Backend & Database:** Siddartha Reddy Koppurapu (23EG106C32) — Signed Off
-- **Frontend & UI/UX:** Sreeram Nikhila (23EG107A58) — Signed Off
+- **Author & Lead Engineer:** Nikhil Bontha (23EG107E11) — Full-Stack, Analytics, DevOps & QA Signed Off

@@ -4,6 +4,7 @@ from app.models.accident import ImportBatch, ImportIssue, AccidentRecord
 from app.models.hotspot import Hotspot, HotspotFactor, Recommendation, HotspotComment, HotspotIntervention, hotspot_accidents
 from app.models.notification import Notification, NotificationSetting
 from app.models.system import SystemSetting, AnalysisRun, Report
+from app.models.chat import ChatConversation, ChatMessage
 
 __all__ = [
     "User",
@@ -24,4 +25,6 @@ __all__ = [
     "SystemSetting",
     "AnalysisRun",
     "Report",
+    "ChatConversation",
+    "ChatMessage",
 ]

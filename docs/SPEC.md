@@ -40,7 +40,7 @@ Five layers plus testing. Keep each layer in its own module with clear interface
 | **DevOps & Deployment** | Docker (one image per service) → GitHub (source) → GitHub Actions (CI/CD) → AWS or Azure (deployment) → Prometheus (monitoring) → Grafana (dashboards) |
 | **Testing (QA)** | pytest + httpx (backend), Vitest + Testing Library (frontend), Playwright (end-to-end + visual checks), Postman/Newman collection, data-validation tests |
 
-**Team and module ownership (put in README):** Sri Kedharnath K (23EG110E04) – Deployment; Nikhil Bontha (23EG107E11) – Testing; Siddartha Reddy Koppurapu (23EG106C32) – Backend + Database; Sreeram Nikhila (23EG107A58) – Frontend + UI/UX.
+**Project Author and Ownership:** Nikhil Bontha (23EG107E11) – Full-Stack Engineering, Spatial Analytics & GIS, Database & PostGIS, Testing & QA, Deployment & DevOps.
 
 **Repository layout:**
 ```

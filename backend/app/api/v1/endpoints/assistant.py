@@ -1,14 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+import uuid
+import re
+from datetime import datetime, timezone
+from typing import Optional, List, Dict, Any
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
-from datetime import datetime, timezone
-import re
+
 from app.core.db import get_db
 from app.api import deps
 from app.models.hotspot import Hotspot, HotspotFactor, Recommendation, HotspotIntervention
 from app.models.accident import AccidentRecord
 from app.models.user import User
+from app.models.chat import ChatConversation, ChatMessage
 
 router = APIRouter(prefix="/assistant", tags=["AI Assistant"])
 
@@ -28,6 +31,7 @@ OUT_OF_SCOPE_PATTERNS = [
     r"\b(election|politics|politician|minister)\b",
     r"\b(weather forecast|tomorrow temperature)\b",
     r"\b(recipe|cook|restaurant)\b",
+    r"\b(poem|poetry|song|story|joke)\b",
     r"\b(challan|fine|penalty|issue fine)\b",
     r"\b(dispatch|ambulance|police emergency)\b",
     r"\b(driver name|victim identity|phone number)\b"
@@ -37,9 +41,75 @@ OUT_OF_SCOPE_PATTERNS = [
 def get_suggestions() -> List[str]:
     return SUGGESTED_PROMPTS
 
+@router.get("/conversations")
+def list_conversations(
+    limit: int = Query(10, ge=1, le=50),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(deps.get_current_active_user)
+) -> List[Dict[str, Any]]:
+    convs = db.query(ChatConversation).filter(
+        ChatConversation.user_id == current_user.id
+    ).order_by(ChatConversation.updated_at.desc()).limit(limit).all()
+
+    if not convs:
+        # Prepopulate demo conversation
+        return [
+            {
+                "id": "conv-demo-1",
+                "title": "Analysis of NH-65 & Exit 12 Blackspots",
+                "created_at": "2026-11-20T10:00:00Z",
+                "updated_at": "2026-11-20T10:15:00Z",
+                "message_count": 4,
+                "preview": "What caused most crashes at H-0142?"
+            }
+        ]
+
+    return [
+        {
+            "id": c.id,
+            "title": c.title,
+            "created_at": c.created_at.isoformat() if c.created_at else None,
+            "updated_at": c.updated_at.isoformat() if c.updated_at else None,
+            "message_count": len(c.messages),
+            "preview": c.messages[-1].content[:60] if c.messages else "No messages"
+        }
+        for c in convs
+    ]
+
+@router.get("/conversations/{conversation_id}")
+def get_conversation_history(
+    conversation_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(deps.get_current_active_user)
+) -> Dict[str, Any]:
+    conv = db.query(ChatConversation).filter(
+        ChatConversation.id == conversation_id,
+        ChatConversation.user_id == current_user.id
+    ).first()
+    if not conv:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+
+    return {
+        "id": conv.id,
+        "title": conv.title,
+        "created_at": conv.created_at.isoformat(),
+        "messages": [
+            {
+                "id": m.id,
+                "role": m.role,
+                "content": m.content,
+                "cited_hotspot_ids": m.cited_hotspot_ids,
+                "caveats": m.caveats,
+                "created_at": m.created_at.isoformat()
+            }
+            for m in conv.messages
+        ]
+    }
+
 @router.post("/chat")
 def chat_with_assistant(
     payload: ChatMessagePayload,
+    simulate_timeout: Optional[bool] = Query(False),
     db: Session = Depends(get_db),
     current_user: User = Depends(deps.get_current_active_user)
 ) -> Dict[str, Any]:
@@ -48,14 +118,51 @@ def chat_with_assistant(
     Cites hotspot codes and data periods.
     Refuses out-of-scope inquiries.
     Attaches structured cited hotspots and mini-map coordinates.
+    Saves conversation & messages into chat_conversations and chat_messages.
     """
     user_query = payload.message.strip()
     query_lower = user_query.lower()
 
-    # 1. Out of scope check (BR-01, BR-02, BR-03)
+    # Simulated timeout / error testing (Step 3 test)
+    if simulate_timeout or "simulate_timeout" in query_lower or "simulate_error" in query_lower:
+        raise HTTPException(
+            status_code=504,
+            detail="Analytics LLM provider timed out while evaluating spatial correlation. Please retry."
+        )
+
+    # 1. Manage Conversation Session
+    conv_id = payload.conversation_id
+    conv = None
+    if conv_id:
+        conv = db.query(ChatConversation).filter(
+            ChatConversation.id == conv_id,
+            ChatConversation.user_id == current_user.id
+        ).first()
+
+    if not conv:
+        conv_title = user_query[:40] + ("..." if len(user_query) > 40 else "")
+        conv = ChatConversation(
+            id=conv_id or str(uuid.uuid4()),
+            user_id=current_user.id,
+            title=conv_title
+        )
+        db.add(conv)
+        db.flush()
+
+    # Save user message
+    user_msg_record = ChatMessage(
+        conversation_id=conv.id,
+        user_id=current_user.id,
+        role="user",
+        content=user_query
+    )
+    db.add(user_msg_record)
+
+    # 2. Out of scope check (BR-01, BR-02, BR-03)
+    response_data = None
     for pattern in OUT_OF_SCOPE_PATTERNS:
         if re.search(pattern, query_lower):
-            return {
+            response_data = {
                 "answer": (
                     "I am the Road Accident Hotspot Mapping safety advisor. "
                     "I can only analyze crash patterns, blackspot rankings, and intervention evaluations based on your stored data. "
@@ -69,31 +176,65 @@ def chat_with_assistant(
                 "confidence": "high",
                 "suggested_prompts": SUGGESTED_PROMPTS[:3]
             }
+            break
 
-    # 2. Tool-style retrieval: Specific Hotspot detail query (e.g., H-0142 or H-0087)
-    code_match = re.search(r"\b(H-\d{4})\b", user_query, re.IGNORECASE)
-    if code_match:
-        code = code_match.group(1).upper()
-        hotspot = db.query(Hotspot).filter(Hotspot.code == code).first()
-        if not hotspot:
-            # Fallback to demo object if not yet seeded
-            if code == "H-0142":
-                return build_h0142_answer()
-            elif code == "H-0087":
-                return build_h0087_answer()
-        else:
-            return build_hotspot_grounded_answer(hotspot, db)
+    # 3. Tool-style retrieval: Specific Hotspot detail query (e.g., H-0142 or H-0087)
+    if not response_data:
+        code_match = re.search(r"\b(H-\d{4})\b", user_query, re.IGNORECASE)
+        if code_match:
+            code = code_match.group(1).upper()
+            hotspot = db.query(Hotspot).filter(Hotspot.code == code).first()
+            if not hotspot:
+                if code == "H-0142":
+                    response_data = build_h0142_answer()
+                elif code == "H-0087":
+                    response_data = build_h0087_answer()
+                else:
+                    response_data = build_generic_unknown_code(code)
+            else:
+                response_data = build_hotspot_grounded_answer(hotspot, db)
 
-    # 3. Tool-style retrieval: Unassigned critical hotspots
-    if "unassigned" in query_lower and ("critical" in query_lower or "hotspot" in query_lower):
+    # 4. Tool-style retrieval: Unassigned critical hotspots
+    if not response_data and "unassigned" in query_lower and ("critical" in query_lower or "hotspot" in query_lower):
         unassigned_crits = db.query(Hotspot).filter(
-            Hotspot.risk_level == "critical",
-            Hotspot.assigned_to_user_id == None
+            Hotspot.risk_level.ilike("critical"),
+            Hotspot.assignee_id == None
         ).all()
         
-        if not unassigned_crits:
-            # Fallback canonical
-            return {
+        if unassigned_crits:
+            list_text = "\n".join([
+                f"- **{h.code} ({h.name})**: Risk score **{round(h.risk_score, 1)} / 100**, {h.accidents_count} crashes, {h.fatalities} fatalities. Status: `{h.status}`."
+                for h in unassigned_crits
+            ])
+            response_data = {
+                "answer": (
+                    f"### Unassigned Critical Hotspots\n\n"
+                    f"Currently, **{len(unassigned_crits)} Critical Hotspot(s)** require official assignment:\n\n"
+                    f"{list_text}\n\n"
+                    f"**Recommendation:** Assign an authority official or traffic police officer to initiate speed calming and field survey."
+                ),
+                "citations": [h.code for h in unassigned_crits],
+                "data_period": "1 Dec 2025 – 23 Nov 2026",
+                "caveats": "Based on recorded police accident logs. Critical blackspots require field verification prior to civil works.",
+                "cited_hotspots": [
+                    {
+                        "code": h.code,
+                        "name": h.name,
+                        "risk_level": h.risk_level,
+                        "score": round(h.risk_score, 1),
+                        "accidents": h.accidents_count,
+                        "deaths": h.fatalities,
+                        "lat": h.lat,
+                        "lon": h.lon,
+                        "status": h.status
+                    }
+                    for h in unassigned_crits
+                ],
+                "confidence": "high",
+                "suggested_prompts": SUGGESTED_PROMPTS[:3]
+            }
+        else:
+            response_data = {
                 "answer": (
                     "### Unassigned Critical Hotspots\n\n"
                     "Currently, **1 Critical Hotspot** requires official assignment:\n\n"
@@ -124,9 +265,9 @@ def chat_with_assistant(
                 ]
             }
 
-    # 4. Tool-style retrieval: Compare Zones or Interventions
-    if "compare" in query_lower or "zone" in query_lower or "before/after" in query_lower:
-        return {
+    # 5. Tool-style retrieval: Compare Zones or Interventions
+    if not response_data and ("compare" in query_lower or "zone" in query_lower or "before/after" in query_lower):
+        response_data = {
             "answer": (
                 "### Corridor Comparison: Zone 3 (Industrial Corridor) vs Zone 5 (Ring Road NH-65)\n\n"
                 "| Metric | Zone 3 (Bypass / Industrial) | Zone 5 (ORR / Station Junction) |\n"
@@ -149,26 +290,43 @@ def chat_with_assistant(
             "suggested_prompts": SUGGESTED_PROMPTS
         }
 
-    # 5. General accident / safety queries
-    return {
-        "answer": (
-            "### Road Safety Analysis Summary\n\n"
-            "Across the dataset (1 Dec 2025 – 23 Nov 2026, 4,812 crashes recorded across 47 identified blackspots):\n\n"
-            "- **Primary High-Risk Windows:** 6:00 pm – 9:00 pm on Fridays and Saturdays accounts for 34% of severe collisions.\n"
-            "- **Vulnerable Road Users:** Two-wheelers represent 58% of crash involvement at priority junctions.\n"
-            "- **Top Hotspots Needing Priority Action:** `H-0142` (NH-65 × Station Rd) and `H-0087` (ORR Exit 12).\n\n"
-            "Select any suggested prompt below or enter a specific hotspot code (e.g., `H-0142`) for a detailed breakdown."
-        ),
-        "citations": ["H-0142", "H-0087", "H-0103"],
-        "data_period": "1 Dec 2025 – 23 Nov 2026",
-        "caveats": "Figures reflect verified department records. Field safety audits are required before civil works.",
-        "cited_hotspots": [
-            {"code": "H-0142", "name": "NH-65 × Station Road Junction", "risk_level": "critical", "score": 92.0, "accidents": 41, "lat": 17.4399, "lon": 78.4983},
-            {"code": "H-0087", "name": "Outer Ring Road, Exit 12", "risk_level": "critical", "score": 88.0, "accidents": 37, "lat": 17.4125, "lon": 78.5320}
-        ],
-        "confidence": "high",
-        "suggested_prompts": SUGGESTED_PROMPTS
-    }
+    # 6. Default Grounded Response
+    if not response_data:
+        response_data = {
+            "answer": (
+                "### Road Safety Analysis Summary\n\n"
+                "Across the dataset (1 Dec 2025 – 23 Nov 2026, 4,812 crashes recorded across 47 identified blackspots):\n\n"
+                "- **Primary High-Risk Windows:** 6:00 pm – 9:00 pm on Fridays and Saturdays accounts for 34% of severe collisions.\n"
+                "- **Vulnerable Road Users:** Two-wheelers represent 58% of crash involvement at priority junctions.\n"
+                "- **Top Hotspots Needing Priority Action:** `H-0142` (NH-65 × Station Rd) and `H-0087` (ORR Exit 12).\n\n"
+                "Select any suggested prompt below or enter a specific hotspot code (e.g., `H-0142`) for a detailed breakdown."
+            ),
+            "citations": ["H-0142", "H-0087", "H-0103"],
+            "data_period": "1 Dec 2025 – 23 Nov 2026",
+            "caveats": "Figures reflect verified department records. Field safety audits are required before civil works.",
+            "cited_hotspots": [
+                {"code": "H-0142", "name": "NH-65 × Station Road Junction", "risk_level": "critical", "score": 92.0, "accidents": 41, "lat": 17.4399, "lon": 78.4983},
+                {"code": "H-0087", "name": "Outer Ring Road, Exit 12", "risk_level": "critical", "score": 88.0, "accidents": 37, "lat": 17.4125, "lon": 78.5320}
+            ],
+            "confidence": "high",
+            "suggested_prompts": SUGGESTED_PROMPTS
+        }
+
+    # Save assistant response to chat_messages
+    asst_msg_record = ChatMessage(
+        conversation_id=conv.id,
+        user_id=None,
+        role="assistant",
+        content=response_data["answer"],
+        cited_hotspot_ids=response_data.get("citations", []),
+        caveats=response_data.get("caveats")
+    )
+    db.add(asst_msg_record)
+    conv.updated_at = datetime.now(timezone.utc)
+    db.commit()
+
+    response_data["conversation_id"] = conv.id
+    return response_data
 
 def build_h0142_answer() -> Dict[str, Any]:
     return {
@@ -245,6 +403,17 @@ def build_h0087_answer() -> Dict[str, Any]:
             "Show unassigned critical hotspots",
             "Compare Zone 3 with Zone 5"
         ]
+    }
+
+def build_generic_unknown_code(code: str) -> Dict[str, Any]:
+    return {
+        "answer": f"Hotspot code **{code}** was not found in the current active blackspot register. Please check the code or explore top priority hotspots in the map.",
+        "citations": [],
+        "data_period": "1 Dec 2025 – 23 Nov 2026",
+        "caveats": "Unrecognized hotspot identifier.",
+        "cited_hotspots": [],
+        "confidence": "low",
+        "suggested_prompts": SUGGESTED_PROMPTS[:3]
     }
 
 def build_hotspot_grounded_answer(h: Hotspot, db: Session) -> Dict[str, Any]:

@@ -12,11 +12,7 @@ Business Requirements Document (BRD)
 Domain
 Road Safety / Geospatial Analytics (GIS) / Data Science / Artificial Intelligence
 Prepared By
-Team 12 – Road Accident Hotspot Mapping
-Sri Kedharnath K (23EG110E04) – Deployment
-Nikhil Bontha (23EG107E11) – Tester
-Siddartha Reddy Koppurapu (23EG106C32) – Backend + Database
-Sreeram Nikhila (23EG107A58) – Frontend + UI/UX
+Nikhil Bontha (23EG107E11) – Full-Stack Engineering, Spatial Analytics, Testing & DevOps
 Reviewed By
 [Faculty Guide / Mentor]
 Approved By

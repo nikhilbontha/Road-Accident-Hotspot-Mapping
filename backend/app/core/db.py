@@ -17,8 +17,10 @@ try:
     with engine.connect() as conn:
         pass
 except Exception:
-    # Fallback to local SQLite for development/testing when PostgreSQL is not running
-    SQLITE_URL = "sqlite:///./road_safety.db"
+    # Fallback to local SQLite anchored to project root for development/testing when PostgreSQL is not running
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    sqlite_file = os.path.join(project_root, "road_safety.db").replace("\\", "/")
+    SQLITE_URL = f"sqlite:///{sqlite_file}"
     engine = create_engine(SQLITE_URL, connect_args={"check_same_thread": False})
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
