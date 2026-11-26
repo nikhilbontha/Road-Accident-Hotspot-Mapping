@@ -1,4 +1,4 @@
-const API_BASE = '/api/v1';
+const API_BASE = (((import.meta as any).env?.VITE_API_BASE_URL as string) || '/api/v1').replace(/\/$/, '');
 
 export async function apiRequest<T = any>(
   endpoint: string,
@@ -14,7 +14,11 @@ export async function apiRequest<T = any>(
     (headers as any)['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE}${endpoint}`, {
+  const url = endpoint.startsWith('http')
+    ? endpoint
+    : `${API_BASE}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+
+  const response = await fetch(url, {
     ...options,
     headers,
   });
