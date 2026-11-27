@@ -36,7 +36,7 @@ def register(
         organisation=user_in.organisation.strip(),
         role=user_in.role,
         password_hash=get_password_hash(user_in.password),
-        status=UserStatusEnum.PENDING,
+        status=UserStatusEnum.ACTIVE,
     )
     db.add(user)
     db.commit()

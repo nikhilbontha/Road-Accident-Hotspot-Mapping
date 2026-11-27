@@ -44,8 +44,19 @@ export const SignupPage: React.FC = () => {
         password,
         policy_agreement: policyAgreement,
       });
+
+      // Cache registration details so user can log in immediately
+      localStorage.setItem('rah_last_registered', JSON.stringify({
+        fullName,
+        email,
+        organisation,
+        role,
+        roleLabel: role.replace('_', ' ').toUpperCase(),
+        status: 'active'
+      }));
+
       setSuccessMessage(
-        res.message || 'Account created. An administrator approves new accounts before you can sign in.'
+        res.message || 'Account created successfully! You can now sign in.'
       );
     } catch (err: any) {
       setError(err.message || 'Failed to create account.');

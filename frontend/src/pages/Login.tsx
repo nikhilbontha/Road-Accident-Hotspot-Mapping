@@ -57,17 +57,60 @@ export const LoginPage: React.FC = () => {
       localStorage.setItem('rah_user', JSON.stringify(res.user));
       navigate('/dashboard');
     } catch (err: any) {
-      // Graceful demo login fallback if backend API is cold-starting, offline, or network fails
+      // 1. If user recently registered with this custom email, log in as them
+      const regRaw = localStorage.getItem('rah_last_registered');
+      if (regRaw) {
+        try {
+          const reg = JSON.parse(regRaw);
+          if (reg.email.toLowerCase() === email.toLowerCase()) {
+            localStorage.setItem(
+              'rah_user',
+              JSON.stringify({
+                fullName: reg.fullName,
+                email: reg.email,
+                role: reg.role,
+                roleLabel: reg.roleLabel || 'Registered User',
+                organisation: reg.organisation || 'State Transport Dept',
+                status: 'active',
+              })
+            );
+            localStorage.setItem('rah_token', 'demo-jwt-token-active-session');
+            navigate('/dashboard');
+            return;
+          }
+        } catch {}
+      }
+
+      // 2. If it's a known demo account, log in as that demo account
       const matched = demoAccounts.find(
         (a) => a.email.toLowerCase() === email.toLowerCase() ||
                (email.toLowerCase().includes('asha') && a.email.includes('asha')) ||
                (email.toLowerCase().includes('admin') && a.email.includes('admin')) ||
                (email.toLowerCase().includes('ravi') && a.email.includes('ravi')) ||
                (email.toLowerCase().includes('sana') && a.email.includes('sana'))
-      ) || demoAccounts[0];
+      );
 
       if (matched) {
         handleQuickDemoLogin(matched);
+        return;
+      }
+
+      // 3. For any other custom email entered, create an active session for that user
+      if (email.includes('@')) {
+        const userName = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+        localStorage.setItem(
+          'rah_user',
+          JSON.stringify({
+            fullName: userName,
+            email: email,
+            role: 'safety_analyst',
+            roleLabel: 'Road Safety Specialist',
+            organisation: 'Transport & Police Department',
+            status: 'active',
+          })
+        );
+        localStorage.setItem('rah_token', 'demo-jwt-token-active-session');
+        navigate('/dashboard');
         return;
       }
 
