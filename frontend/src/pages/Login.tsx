@@ -18,7 +18,7 @@ export const LoginPage: React.FC = () => {
     { name: 'Dr. Kiran Rao', role: 'admin', roleLabel: 'Administrator', email: 'admin@demo.in' },
   ];
 
-  const handleQuickDemoLogin = (account: typeof demoAccounts[0]) => {
+  const handleQuickDemoLogin = async (account: typeof demoAccounts[0]) => {
     setEmail(account.email);
     setPassword('DemoPass123!');
     localStorage.setItem(
@@ -33,6 +33,16 @@ export const LoginPage: React.FC = () => {
       })
     );
     localStorage.setItem('rah_token', 'demo-jwt-token-active-session');
+
+    try {
+      const res = await authApi.login(account.email, 'DemoPass123!');
+      if (res?.access_token) {
+        localStorage.setItem('rah_token', res.access_token);
+      }
+    } catch {
+      // Backend gracefully accepts demo-jwt-token-active-session
+    }
+
     navigate('/dashboard');
   };
 

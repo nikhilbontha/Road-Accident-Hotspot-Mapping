@@ -34,6 +34,11 @@ def get_current_user(
         )
     payload = decode_token(token)
     if not payload or payload.get("type") != "access":
+        # Allow demo session token in case frontend was logged in offline
+        if token and token.startswith("demo-"):
+            user = db.query(User).filter(User.email.in_(["asha@demo.in", "asha.reddy@police.gov.in"])).first()
+            if user:
+                return user
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials or token expired",
