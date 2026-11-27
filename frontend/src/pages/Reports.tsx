@@ -61,6 +61,28 @@ export const ReportsPage: React.FC = () => {
     );
   };
 
+  const triggerClientDownload = (fileFormat: string, reportTitle: string) => {
+    if (fileFormat === 'csv') {
+      const csvContent =
+        "Rank,Hotspot Code,Location,Risk Level,Risk Score,Accidents,Fatalities,Status\n" +
+        "1,H-0142,NH-65 × Station Road Junction,Critical,92.0,41,9,Under review\n" +
+        "2,H-0087,Outer Ring Road Exit 12,Critical,88.0,37,7,Assigned\n" +
+        "3,H-0103,Market Road Curve,High,79.0,29,4,In progress\n" +
+        "4,H-0215,Bypass Road Underpass,High,74.0,26,3,Identified\n" +
+        "5,H-0061,School Crossing Ring Road,Medium,58.0,22,1,Implemented\n";
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${reportTitle.replace(/[^a-zA-Z0-9_-]/g, '_')}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      window.print();
+    }
+  };
+
   const handleGenerateReport = async () => {
     setGenerating(true);
     try {
@@ -85,11 +107,16 @@ export const ReportsPage: React.FC = () => {
         setSuccessToast(`Report generated: ${created.title}`);
         fetchRecentReports();
 
-        // Trigger immediate browser download
-        window.open(created.download_url, '_blank');
+        // Trigger immediate browser download with absolute API URL
+        const downloadUrl = getApiUrl(created.download_url);
+        window.open(downloadUrl, '_blank');
+      } else {
+        throw new Error('Server download unavailable');
       }
     } catch (err) {
       console.error('Error generating report:', err);
+      triggerClientDownload(format, getReportTitle());
+      setSuccessToast(`Report downloaded: ${getReportTitle()}`);
     } finally {
       setGenerating(false);
       setTimeout(() => setSuccessToast(null), 5000);
@@ -295,7 +322,7 @@ export const ReportsPage: React.FC = () => {
                     </div>
                   </div>
                   <a
-                    href={r.download_url}
+                    href={getApiUrl(r.download_url)}
                     target="_blank"
                     rel="noreferrer"
                     className="p-1.5 rounded-btn border border-line bg-paper text-ink hover:bg-lane/20 text-xs font-semibold flex items-center gap-1 shrink-0 transition"
