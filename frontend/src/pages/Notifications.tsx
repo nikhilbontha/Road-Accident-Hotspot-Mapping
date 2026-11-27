@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getApiUrl } from '../services/api';
 import {
   Bell,
   CheckCheck,
@@ -50,7 +51,7 @@ export const NotificationsPage: React.FC = () => {
   const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem('rah_token');
-      const res = await fetch(`/api/v1/notifications?filter=${filter}`, {
+      const res = await fetch(getApiUrl(`/notifications?filter=${filter}`), {
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {})
@@ -70,7 +71,7 @@ export const NotificationsPage: React.FC = () => {
   const fetchSettings = async () => {
     try {
       const token = localStorage.getItem('rah_token');
-      const res = await fetch('/api/v1/notifications/settings', {
+      const res = await fetch(getApiUrl('/notifications/settings'), {
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {})
@@ -93,7 +94,7 @@ export const NotificationsPage: React.FC = () => {
   const markAllRead = async () => {
     try {
       const token = localStorage.getItem('rah_token');
-      await fetch('/api/v1/notifications/read-all', {
+      await fetch(getApiUrl('/notifications/read-all'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +110,7 @@ export const NotificationsPage: React.FC = () => {
   const markItemRead = async (id: string, entity_id?: string) => {
     try {
       const token = localStorage.getItem('rah_token');
-      await fetch(`/api/v1/notifications/${id}/read`, {
+      await fetch(getApiUrl(`/notifications/${id}/read`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -130,7 +131,7 @@ export const NotificationsPage: React.FC = () => {
     setSettings(updated);
     try {
       const token = localStorage.getItem('rah_token');
-      await fetch('/api/v1/notifications/settings', {
+      await fetch(getApiUrl('/notifications/settings'), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

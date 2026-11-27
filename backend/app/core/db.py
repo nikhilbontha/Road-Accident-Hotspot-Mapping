@@ -17,9 +17,24 @@ try:
     with engine.connect() as conn:
         pass
 except Exception:
-    # Fallback to local SQLite anchored to project root for development/testing when PostgreSQL is not running
-    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-    sqlite_file = os.path.join(project_root, "road_safety.db").replace("\\", "/")
+    # Look for existing road_safety.db in candidate locations
+    current_dir = os.path.dirname(os.path.abspath(__file__))  # backend/app/core
+    backend_dir = os.path.dirname(os.path.dirname(current_dir))  # backend
+    project_root = os.path.dirname(backend_dir)  # project root
+
+    candidates = [
+        os.path.join(backend_dir, "road_safety.db"),
+        os.path.join(project_root, "road_safety.db"),
+        os.path.join(os.getcwd(), "road_safety.db"),
+        os.path.join(os.getcwd(), "backend", "road_safety.db"),
+    ]
+    sqlite_file = candidates[0]
+    for c in candidates:
+        if os.path.isfile(c) and os.path.getsize(c) > 1000:
+            sqlite_file = c
+            break
+
+    sqlite_file = os.path.abspath(sqlite_file).replace("\\", "/")
     SQLITE_URL = f"sqlite:///{sqlite_file}"
     engine = create_engine(SQLITE_URL, connect_args={"check_same_thread": False})
 

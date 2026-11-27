@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getApiUrl } from '../services/api';
 import {
   TrendingDown,
   TrendingUp,
@@ -78,11 +79,11 @@ export const DashboardPage: React.FC = () => {
         };
 
         const [sumRes, monRes, riskRes, heatRes, topRes] = await Promise.all([
-          fetch('/api/v1/dashboard/summary', { headers }),
-          fetch('/api/v1/dashboard/monthly', { headers }),
-          fetch('/api/v1/dashboard/risk-distribution', { headers }),
-          fetch('/api/v1/dashboard/heat-grid', { headers }),
-          fetch('/api/v1/dashboard/top-hotspots', { headers })
+          fetch(getApiUrl('/dashboard/summary'), { headers }),
+          fetch(getApiUrl('/dashboard/monthly'), { headers }),
+          fetch(getApiUrl('/dashboard/risk-distribution'), { headers }),
+          fetch(getApiUrl('/dashboard/heat-grid'), { headers }),
+          fetch(getApiUrl('/dashboard/top-hotspots'), { headers })
         ]);
 
         if (sumRes.ok) setSummary(await sumRes.json());

@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.db import engine, Base
 import app.models  # load models
+from app.db.init_db import init_db_and_seed
 from app.api.v1.api import api_router
 
 try:
@@ -18,8 +19,8 @@ except ImportError:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize all database tables
-    Base.metadata.create_all(bind=engine)
+    # Initialize all database tables and seed demo data
+    init_db_and_seed()
     yield
 
 

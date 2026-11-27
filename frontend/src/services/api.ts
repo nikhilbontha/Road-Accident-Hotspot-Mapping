@@ -1,4 +1,19 @@
-const API_BASE = (((import.meta as any).env?.VITE_API_BASE_URL as string) || '/api/v1').replace(/\/$/, '');
+const isLocal = typeof window !== 'undefined' && (
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1' ||
+  window.location.hostname === '0.0.0.0'
+);
+
+export const API_BASE = (
+  ((import.meta as any).env?.VITE_API_BASE_URL as string) ||
+  (isLocal ? '/api/v1' : 'https://road-accident-hotspot-mapping.onrender.com/api/v1')
+).replace(/\/$/, '');
+
+export function getApiUrl(path: string): string {
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  const cleanPath = path.replace(/^\/api\/v1/, '').replace(/^\//, '');
+  return `${API_BASE}/${cleanPath}`;
+}
 
 export async function apiRequest<T = any>(
   endpoint: string,
@@ -14,9 +29,7 @@ export async function apiRequest<T = any>(
     (headers as any)['Authorization'] = `Bearer ${token}`;
   }
 
-  const url = endpoint.startsWith('http')
-    ? endpoint
-    : `${API_BASE}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+  const url = getApiUrl(endpoint);
 
   const response = await fetch(url, {
     ...options,

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getApiUrl } from '../services/api';
 import {
   Send,
   Sparkles,
@@ -121,7 +122,7 @@ export const AIAssistantPage: React.FC = () => {
 
     try {
       const token = localStorage.getItem('rah_token');
-      const res = await fetch('/api/v1/assistant/chat', {
+      const res = await fetch(getApiUrl('/assistant/chat'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

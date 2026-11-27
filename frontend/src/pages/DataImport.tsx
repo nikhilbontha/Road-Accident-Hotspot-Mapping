@@ -12,7 +12,7 @@ import {
   X,
   FileSpreadsheet,
 } from 'lucide-react';
-import { apiRequest } from '../services/api';
+import { apiRequest, getApiUrl } from '../services/api';
 
 interface IssueItem {
   id: string;
@@ -123,7 +123,7 @@ export const DataImportPage: React.FC = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const res = await fetch('/api/v1/imports', {
+      const res = await fetch(getApiUrl('/imports'), {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('rah_token') || ''}`,
@@ -147,7 +147,7 @@ export const DataImportPage: React.FC = () => {
       }
 
       // Fetch issues
-      const issuesRes = await fetch(`/api/v1/imports/${data.id}/issues`, {
+      const issuesRes = await fetch(getApiUrl(`/imports/${data.id}/issues`), {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('rah_token') || ''}`,
         },

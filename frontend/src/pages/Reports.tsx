@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../services/api';
 import {
   FileText,
   FileSpreadsheet,
@@ -40,7 +41,7 @@ export const ReportsPage: React.FC = () => {
   const fetchRecentReports = async () => {
     try {
       const token = localStorage.getItem('rah_token');
-      const res = await fetch('/api/v1/reports', {
+      const res = await fetch(getApiUrl('/reports'), {
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {})
@@ -64,7 +65,7 @@ export const ReportsPage: React.FC = () => {
     setGenerating(true);
     try {
       const token = localStorage.getItem('rah_token');
-      const res = await fetch('/api/v1/reports', {
+      const res = await fetch(getApiUrl('/reports'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
