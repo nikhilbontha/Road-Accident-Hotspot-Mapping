@@ -51,6 +51,18 @@ export const HotspotMapPage: React.FC = () => {
   // Selected Hotspot for floating drawer
   const [selectedIndex, setSelectedIndex] = useState(0);
 
+  // Reactive search that selects matching hotspot on the map
+  useEffect(() => {
+    if (!searchQuery.trim()) return;
+    const q = searchQuery.toLowerCase();
+    const foundIdx = seededHotspots.findIndex(
+      (h) => h.code.toLowerCase().includes(q) || h.name.toLowerCase().includes(q) || h.roadName.toLowerCase().includes(q)
+    );
+    if (foundIdx !== -1) {
+      setSelectedIndex(foundIdx);
+    }
+  }, [searchQuery]);
+
   // Default seeded hotspots matching reference mockups
   const seededHotspots: HotspotItem[] = [
     {

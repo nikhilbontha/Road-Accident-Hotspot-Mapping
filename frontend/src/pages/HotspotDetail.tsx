@@ -37,8 +37,125 @@ export const HotspotDetailPage: React.FC = () => {
   const [currentRisk, setCurrentRisk] = useState<'critical' | 'high' | 'medium' | 'low'>('critical');
   const [riskOverridden, setRiskOverridden] = useState(false);
 
+  // Dynamic registry for blackspot details
+  const hotspotProfiles: Record<string, any> = {
+    'H-0061': {
+      code: 'H-0061',
+      name: 'School Crossing, Ring Road',
+      roadName: 'Ring Road',
+      area: 'Zone 5 (Ring Road)',
+      riskScore: 58,
+      riskLevel: 'medium',
+      scoreBreakdown: { deaths: 12, frequency: 24, injuries: 22 },
+      accidentsCount: 22,
+      fatalities: 1,
+      injured: 29,
+      status: 'Implemented',
+      peakTime: '8–10 am & 3–5 pm',
+      factors: [
+        { label: 'Vulnerable road user exposure', percent: 62 },
+        { label: 'Missing zebra crossing / refuge', percent: 54 },
+        { label: 'Morning school rush congestion', percent: 38 },
+        { label: 'Lack of speed calming tables', percent: 31 },
+      ],
+      recommendations: [
+        {
+          title: 'Raised table pedestrian crossing with flashing amber signals',
+          factor: 'Addresses vulnerable school children crossing exposure',
+          evidence: '14 of 22 incidents involved students during 8-10 am and 3-5 pm',
+          confidence: 'High',
+        },
+        {
+          title: 'Reflective school zone warning signage & speed limits 30 km/h',
+          factor: 'Addresses vehicles overspeeding near school gate',
+          evidence: 'Average approach speeds exceeded 65 km/h',
+          confidence: 'Medium',
+        },
+      ]
+    },
+    'H-0087': {
+      code: 'H-0087',
+      name: 'Outer Ring Road, Exit 12',
+      roadName: 'Outer Ring Road',
+      area: 'Zone 3 (Industrial)',
+      riskScore: 88,
+      riskLevel: 'critical',
+      scoreBreakdown: { deaths: 38, frequency: 30, injuries: 20 },
+      accidentsCount: 37,
+      fatalities: 7,
+      injured: 48,
+      status: 'Assigned',
+      peakTime: '9–12 pm, Sat–Sun',
+      factors: [
+        { label: 'Heavy freight truck lane conflicts', percent: 64 },
+        { label: 'Abrupt deceleration at exit slip', percent: 52 },
+        { label: 'Night-time merging overspeeding', percent: 45 },
+      ],
+      recommendations: [
+        {
+          title: '120m Deceleration taper extension & lane segregation',
+          factor: 'Addresses abrupt exit slip conflict',
+          evidence: '62% of rear-end crashes involved merging trucks',
+          confidence: 'High',
+        },
+      ]
+    },
+    'H-0103': {
+      code: 'H-0103',
+      name: 'Market Road Curve',
+      roadName: 'Market Road',
+      area: 'Old City Corridor',
+      riskScore: 79,
+      riskLevel: 'high',
+      scoreBreakdown: { deaths: 25, frequency: 32, injuries: 22 },
+      accidentsCount: 29,
+      fatalities: 4,
+      injured: 38,
+      status: 'Action in progress',
+      peakTime: '3–6 pm, Daily',
+      factors: [
+        { label: 'Sharp curve sightline obstruction', percent: 59 },
+        { label: 'Pedestrian spillover from market stalls', percent: 48 },
+      ],
+      recommendations: [
+        {
+          title: 'High-friction anti-skid surfacing & convex safety mirrors',
+          factor: 'Addresses sharp blind curve skidding',
+          evidence: '18 of 29 collisions occurred during wet conditions on curve',
+          confidence: 'High',
+        },
+      ]
+    },
+    'H-0215': {
+      code: 'H-0215',
+      name: 'Bypass Road Underpass',
+      roadName: 'Bypass Road',
+      area: 'North Bypass Zone',
+      riskScore: 74,
+      riskLevel: 'high',
+      scoreBreakdown: { deaths: 22, frequency: 30, injuries: 22 },
+      accidentsCount: 26,
+      fatalities: 3,
+      injured: 31,
+      status: 'Identified',
+      peakTime: '6–9 pm, Mon–Wed',
+      factors: [
+        { label: 'Monsoon water logging in dip', percent: 66 },
+        { label: 'Low clearance height strikes', percent: 41 },
+      ],
+      recommendations: [
+        {
+          title: 'High-capacity stormwater sump pumps & illuminated gantry height warnings',
+          factor: 'Addresses underpass flooding & vehicle clearance',
+          evidence: 'Crashes concentrated around sudden water accumulation',
+          confidence: 'High',
+        },
+      ]
+    },
+  };
+
   // Reference data for H-0142
-  const hotspotData = {
+  const defaultProfile = {
     code: code || 'H-0142',
     name: 'NH-65 × Station Road Junction',
     roadName: 'National Highway 65',
@@ -94,6 +211,10 @@ export const HotspotDetailPage: React.FC = () => {
       },
     ],
   };
+
+  const hotspotData = (code && hotspotProfiles[code])
+    ? { ...defaultProfile, ...hotspotProfiles[code] }
+    : defaultProfile;
 
   const lifecycleSteps = [
     'Identified',

@@ -112,7 +112,7 @@ export const DashboardPage: React.FC = () => {
 
   const rd = riskDist || { total: 47, new_this_week: 2, critical: 12, high: 15, medium: 13, low: 7 };
 
-  const months = monthly.length > 0 ? monthly : [
+  const rawMonths = monthly.length > 0 ? monthly : [
     { month: 'Dec 2025', short: 'Dec', accidents: 412, fatalities: 34 },
     { month: 'Jan 2026', short: 'Jan', accidents: 398, fatalities: 31 },
     { month: 'Feb 2026', short: 'Feb', accidents: 365, fatalities: 28 },
@@ -126,6 +126,7 @@ export const DashboardPage: React.FC = () => {
     { month: 'Oct 2026', short: 'Oct', accidents: 395, fatalities: 32 },
     { month: 'Nov 2026', short: 'Nov', accidents: 390, fatalities: 36 }
   ];
+  const months = rawMonths.length > 12 ? rawMonths.slice(-12) : rawMonths;
 
   const grid = heatGrid || {
     days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -322,7 +323,7 @@ export const DashboardPage: React.FC = () => {
       {/* Row 2: Monthly Trends Chart + Risk Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Accidents by Month (2 Cols) */}
-        <div className="lg:col-span-2 bg-card border border-line rounded-card p-5 shadow-sm">
+        <div className="lg:col-span-2 bg-card border border-line rounded-card p-5 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-[15px] font-semibold text-ink">Accidents by month</h2>
