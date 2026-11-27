@@ -381,7 +381,7 @@ export const HotspotDetailPage: React.FC = () => {
             </div>
 
             <div className="h-44 flex items-end justify-between gap-2 pt-6 pb-2 px-2 border-b border-line">
-              {hotspotData.timeDistribution.map((bar, i) => {
+              {hotspotData.timeDistribution.map((bar: any, i: number) => {
                 const heightPercent = (bar.val / 16) * 100;
                 return (
                   <div key={bar.label} className="flex-1 flex flex-col items-center h-full justify-end group">
@@ -412,7 +412,7 @@ export const HotspotDetailPage: React.FC = () => {
             </h3>
 
             <div className="space-y-3">
-              {hotspotData.factors.map((f) => (
+              {hotspotData.factors.map((f: any) => (
                 <div key={f.label} className="space-y-1">
                   <div className="flex justify-between text-[13px]">
                     <span className="text-ink font-medium">{f.label}</span>
@@ -486,7 +486,7 @@ export const HotspotDetailPage: React.FC = () => {
             </div>
 
             <div className="space-y-3">
-              {hotspotData.recommendations.map((rec) => (
+              {hotspotData.recommendations.map((rec: any) => (
                 <div
                   key={rec.title}
                   className="p-3.5 rounded-btn border border-line bg-paper/60 hover:border-lane transition-colors space-y-1.5"
